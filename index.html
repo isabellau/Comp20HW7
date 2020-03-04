@@ -57,13 +57,11 @@ function validate() {
 	}
 
 	else if (document.orderform.p_or_d[1].checked) {
-
 		var today2 = new Date();
 
 		var devmins = today2.getMinutes();
 
 		var totaldevmin = devmins + 30;
-
 
 		if (totaldevmin > 60) {
 			totaldevmin = totaldevmin % 60;
@@ -219,7 +217,7 @@ function makeSelect(name, minRange, maxRange)
       <p>Thanks for your order!</p>
       <div>
 	      <div>Your Order Total is: </div>
-	      <div id="ordertotal">&nbsp;</div>
+	      <div id="ordertotal">0</div>
  	 </div>
       <div id="delivtime" style="display:none;">
 	     <div> Your Delivery Time is: </div>
