@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+</head>
+
+<body>
+<script language="javascript">
+
+function MenuItem(name, cost)
+{
+	this.name = name;
+	this.cost=cost;
+}
+
+menuItems = new Array(
+	new MenuItem("Chicken Chop Suey", 4.5),
+	new MenuItem("Sweet and Sour Pork", 6.25),
+	new MenuItem("Shrimp Lo Mein", 5.25),
+	new MenuItem("Moo Shi Chicken", 6.5),
+	new MenuItem("Fried Rice", 2.35)
+);
+
+function validate() {
+	var wereissues = 0;
+	var nameissue = 0 // 0 if no issues, 1 if issues
+	var streetissue = 0;
+	var cityissue = 0;
+	var phoneissue = 0;
+	var inpickup = 0;
+
+
+	if (document.orderform.lname.value == "")
+	{
+		nameissue = 1;
+		wereissues = 1;
+	} 
+
+	if (document.orderform.p_or_d[0].checked) {
+		var today = new Date();
+		
+		var minutes = today.getMinutes();
+
+		var totalminutes = minutes + 15;
+
+
+		if (totalminutes > 60) {
+			totalminutes = totalminutes % 60;
+		}
+
+		var time = today.getHours() + ":" +totalminutes + ":" + today.getSeconds();
+
+		document.getElementById("actualptime").innerHTML = time;
+		inpickup = 1;
+		document.getElementById("delivtime").style.display = "none";
+	}
+
+	else if (document.orderform.p_or_d[1].checked) {
+
+		var today2 = new Date();
+
+		var devmins = today2.getMinutes();
+
+		var totaldevmin = devmins + 30;
+
+
+		if (totaldevmin > 60) {
+			totaldevmin = totaldevmin % 60;
+		}
+
+		if (totaldevmin.toString().length == 1) {
+
+			var oldnum = totaldevmin;
+
+			totaldevmin = ('0' + oldnum).slice(-2);
+
+		}
+
+		var time2 = today2.getHours() + ":" + totaldevmin + ":" + today2.getSeconds();
+		document.getElementById("actualtime").innerHTML = time2;
+		document.getElementById("delivtime").style.display = "block";
+		document.getElementById("pickuptime").style.display = "none";
+
+		if (document.orderform.street.value == "")
+		{
+			streetissue = 1;
+		} 
+
+		if (document.orderform.city.value == "")
+		{
+			cityissue = 1;
+		} 
+	}
+
+	var phonenum = document.orderform.phone.value;
+	var fakebool = 0;
+
+	if(phonenum.length != 12)
+	{
+		phoneissue = 1;
+	}
+
+	else {
+		for (i = 0 ; i < 12; i++) {
+			var numvalue = parseInt(phonenum[i]);
+			if ((i == 3) || (i == 7)) {
+				if(phonenum[i] != "-") {
+					phoneissue = 1;
+				}
+			}
+
+			else if (isNaN(numvalue)) {
+				phoneissue = 1;
+			}
+		}
+	}
+
+	if (wereissues != 0) {
+		var alertcontent = "";
+
+		if (nameissue != 0) {
+			alertcontent += "Issue: Must have include a last name\n";
+		}
+
+		if (streetissue != 0) {
+			alertcontent += "Issue: Must include a street for delivery option\n";
+		}
+
+		if (cityissue != 0) {
+			alertcontent += "Issue: Must include a city for delivery option\n";
+		}
+
+		if (phoneissue != 0) {
+			alertcontent += "Issue: Must include a valid phone number\n";
+		}
+
+		alert(alertcontent);
+
+	}
+
+	else {
+		document.getElementById("ordertotal").innerHTML = "$" + document.getElementById("total").value;
+        document.getElementById("OrderResults").style.display = "block";
+
+        if (inpickup == 1) {
+        	document.getElementById("pickuptime").style.display = "block";
+        }
+        else {
+        	document.getElementById("delivtime").style.display = "block";
+        }
+	}
+
+}
+
+
+function makeSelect(name, minRange, maxRange)
+{
+	var t= "";
+	t =  "<select name='" + name + "' size='1' >";
+
+	for (j=minRange; j<=maxRange; j++)
+	   t += "<option>" + j + "</option>";
+	t+= "</select>"; 
+	return t;
+}
+
+</script>
+
+<h1>Jade Delight</h1>
+	<form name="orderform" onsubmit="validate();return false;">
+<!--  name= "onsubmit="return validate() -->
+	<p>First Name: <input type="text"  name='fname' /></p>
+	<p>Last Name*:  <input type="text"  name='lname' /></p>
+	<p>Street: <input type="text"  name='street' /></p>
+	<p>City: <input type="text"  name='city' /></p>
+	<p>Phone* (in format xxx-xxx-xxxx): <input type="text"  name='phone' /></p>
+	<p> 
+		<input type="radio"  name="p_or_d" value = "pickup" checked="checked"/>Pickup  
+		<input type="radio"  name='p_or_d' value = 'delivery'/>
+		Delivery
+	</p>
+	<table border="0" cellpadding="3" id="menu">
+	  <tr>
+	    <th>Select Item</th>
+	    <th>Item Name</th>
+	    <th>Cost Each</th>
+	    <th>Total Cost</th>
+	  </tr>
+	<script language="javascript">
+
+	  var s = "";
+	  for (i = 0; i < menuItems.length; i++)
+	  {
+		  s += "<tr><td>";
+		  s += makeSelect("quan" + i, 0, 10);
+		  s += "</td><td>" + menuItems[i].name + "</td>";
+		  s += "<td> $ " + menuItems[i].cost.toFixed(2) + "</td>";
+		  s += "<td>$<input type='text' name='cost'/></td></tr>";
+	  }
+	  document.writeln(s);
+	</script>
+	</table>
+		<p>Subtotal: 
+		   $<input type="text"  name='subtotal' id="subtotal" />
+		</p>
+		<p>Mass tax 6.25%:
+		  $ <input type="text"  name='tax' id="tax" />
+		</p>
+		<p>Total: $ <input type="text"  name='total' id="total" />
+		</p>
+
+		<input type = "submit" value = "Submit Order" />
+
+	</form>
+
+
+    <div id="OrderResults" style="display:none;">
+      <p>Thanks for your order!</p>
+      <div>
+	      <div>Your Order Total is: </div>
+	      <div id="ordertotal">&nbsp;</div>
+ 	 </div>
+      <div id="delivtime" style="display:none;">
+	     <div> Your Delivery Time is: </div>
+	     <div id="actualtime">&nbsp;</div>
+ 	 </div>
+      <div id="pickuptime" style="display:none;">
+	     <div> Your Pickup Time is: </div>
+	     <div id="actualptime">&nbsp;</div>
+ 	 </div>
+    </div>
+
+	<script language="javascript">
+
+	var costs = document.getElementsByName('cost');
+
+	for (i = 0; i < menuItems.length; i++) {
+
+		document.getElementsByName("quan" + i)[0].addEventListener("change", function() {
+			var index = event.target.selectedIndex;
+			var quantity = parseInt(event.target.options[index].text);
+
+
+			var menuItemIndex = parseInt(event.target.name.charAt(4));
+
+			var cost = menuItems[menuItemIndex].cost;
+			var itemtotal = quantity * cost;
+
+			document.getElementById("menu").rows[menuItemIndex + 1].cells[3].children[0].value = itemtotal.toFixed(2);
+			
+			var currsubt = document.getElementById("subtotal").value;
+
+			var newtotal = +currsubt + +itemtotal;
+
+			document.getElementById("subtotal").value = newtotal.toFixed(2);
+
+			var newtax = newtotal * 0.0625;
+			document.getElementById("tax").value = newtax.toFixed(2);
+			
+			var fulltotal = newtax + newtotal;
+			document.getElementById("total").value = fulltotal.toFixed(2);
+
+		});
+	}
+	</script>
+
+</body>
+</html>
